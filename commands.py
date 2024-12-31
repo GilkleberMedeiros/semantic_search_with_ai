@@ -1,9 +1,11 @@
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader, ChatGPTLoader
 from langchain.text_splitter import CharacterTextSplitter
+from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain_community.vectorstores import FAISS
 import faiss
 from langchain_community.docstore import InMemoryDocstore
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
+from langchain_google_genai.llms import GoogleGenerativeAI
 from langchain_core.documents import Document
 
 import os
@@ -15,7 +17,10 @@ class ConfigObj:
     Temporary config class
     """
     def __init__(self) -> None:
-        self.model_chat = "llama3.2:1b"
+        self.model_chat = "gemini-1.5-pro"
+        self.chat_model_temperature = 0.7
+        self.chat_model_top_p = None
+        self.chat_model_top_k = None
         self.model_embeddings = "models/embedding-001"
 
         self.text_splitter_chunk_size = 1000
@@ -24,6 +29,8 @@ class ConfigObj:
 
         self.vector_store_search_k = 1
         self.vector_store_search_fetch_k = 20
+
+        self.retrieval_chain_type = "stuff"
 
 
 configs = ConfigObj()
@@ -34,6 +41,13 @@ if not GOOGLE_API_KEY:
     GOOGLE_API_KEY = getpass.getpass("Provide your google ai api key: ")
 
 
+chat_model = GoogleGenerativeAI(
+    model=configs.model_chat,
+    api_key=GOOGLE_API_KEY,
+    temperature=configs.chat_model_temperature,
+    top_p=configs.chat_model_top_p,
+    top_k=configs.chat_model_top_k,
+)
 embeddings_model = GoogleGenerativeAIEmbeddings(
     model=configs.model_embeddings, 
     google_api_key=GOOGLE_API_KEY,
@@ -99,3 +113,21 @@ def ask(argv: list[str]) -> None:
     for i in range(len(results)):
         print(f"Answer {i+1}: ")
         print(f"{results[i]}")
+
+def ask_with_ai(argv: list[str]) -> None:
+    if len(argv) != 1:
+        raise Exception("askWithAi command don't accept more than one arg!")
+
+    retriever = vector_store.as_retriever()
+
+    qa_chain = RetrievalQA.from_chain_type(
+        llm=chat_model, 
+        retriever=retriever, 
+        chain_type=configs.retrieval_chain_type, 
+    )
+
+    response = qa_chain.invoke(argv[0])
+
+    print("------------Asking with ai------------")
+    print(f"Question: {response["query"]}")
+    print(f"Response: \n{response["result"]}")

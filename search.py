@@ -5,7 +5,7 @@ from commands import *
 
 command_map = {
     "train": train,
-    "askWithAI": None,
+    "askWithAI": ask_with_ai,
     "ask": ask,
 }
 
