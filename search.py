@@ -1,16 +1,16 @@
 """
 Arquivo de entrada para a aplicação cli.
 """
-from commands import train
+from commands import *
 
 command_map = {
     "train": train,
     "askWithAI": None,
-    "ask": None,
+    "ask": ask,
 }
 
 def main() -> None:
-    print("Entrando na linha de comando personalizada...")
+    print("Entering on personalized command line...")
 
     while True:
         argv = split_ignoring_while_in_char(input(""))
@@ -20,7 +20,7 @@ def main() -> None:
         elif command_map.get(argv[0], False):
             command_map[argv[0]](argv[1:])
         else:
-            raise Exception(f"Comando {argv[0]} não encontrado!!!")
+            raise Exception(f"Command {argv[0]} not found!!!")
 
 def split_ignoring_while_in_char(
         string: str, 

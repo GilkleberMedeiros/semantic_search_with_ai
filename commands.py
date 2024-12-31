@@ -19,8 +19,11 @@ class ConfigObj:
         self.model_embeddings = "models/embedding-001"
 
         self.text_splitter_chunk_size = 1000
-        self.text_splitter_chunk_overlap = 100
+        self.text_splitter_chunk_overlap = 50
         self.text_splitter_length_function = len
+
+        self.vector_store_search_k = 1
+        self.vector_store_search_fetch_k = 20
 
 
 configs = ConfigObj()
@@ -80,3 +83,19 @@ def load_documents(document_path: str) -> list[Document]:
         return pages
     
     raise Exception(f"document {document_path} passed is not supported!")
+
+def ask(argv: list[str]) -> None:
+    if len(argv) != 1:
+        raise Exception("ask, without ai, command accept only one param!")
+    
+    results = vector_store.similarity_search(
+        argv[0], 
+        k=configs.vector_store_search_k, 
+        fetch_k=configs.vector_store_search_fetch_k, 
+    )
+
+    print(f"------------Asking without ai------------")
+    print(f"Question: {argv[0]}")
+    for i in range(len(results)):
+        print(f"Answer {i+1}: ")
+        print(f"{results[i]}")
