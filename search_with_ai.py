@@ -1,9 +1,10 @@
 """
 Arquivo de entrada para a aplicação cli.
 """
+from commands import train
 
 command_map = {
-    "train": None,
+    "train": train,
     "askWithAI": None,
     "ask": None,
 }
@@ -17,8 +18,7 @@ def main() -> None:
         if argv[0] == "quit":
             break
         elif command_map.get(argv[0], False):
-            break
-            pass
+            command_map[argv[0]](argv[1:])
         else:
             raise Exception(f"Comando {argv[0]} não encontrado!!!")
 
