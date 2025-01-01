@@ -21,6 +21,8 @@ class ConfigObj:
         self.vector_store_search_k = 1
         self.vector_store_search_fetch_k = 20
 
+        self.retrieval_k = 4
+        self.retrieval_fetch_k = 20
         self.retrieval_chain_type = "stuff"
 
         self.google_api_key_name = "GOOGLE_AISTUDIO_API_KEY"

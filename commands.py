@@ -106,7 +106,10 @@ def ask_with_ai(argv: list[str]) -> None:
         if question.lower() == r"\q":
             break
 
-        retriever = vector_store.as_retriever()
+        retriever = vector_store.as_retriever(search_kwargs={
+            "k": configs.retrieval_k, 
+            "fetch_k": configs.retrieval_fetch_k,
+        })
 
         qa_chain = RetrievalQA.from_chain_type(
             llm=chat_model, 
