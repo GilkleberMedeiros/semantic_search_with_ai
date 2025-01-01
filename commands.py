@@ -11,7 +11,6 @@ from langchain_core.documents import Document
 import os
 import getpass
 
-# TODO: Create sub-terminals for ask and askWithAI commands
 # TODO: Put configs on other file.
 # TODO: Extract configs from a json config file.
 # TODO: Put object dependencies loading in other file.
@@ -102,36 +101,46 @@ def load_documents(document_path: str) -> list[Document]:
     
     raise Exception(f"document {document_path} passed is not supported!")
 
-def ask(argv: list[str]) -> None:
-    if len(argv) != 1:
-        raise Exception("ask, without ai, command accept only one param!")
-    
-    results = vector_store.similarity_search(
-        argv[0], 
-        k=configs.vector_store_search_k, 
-        fetch_k=configs.vector_store_search_fetch_k, 
-    )
+def ask(argv: list[str]) -> None: 
+    print(f"------------Asking without AI------------")
+    print(f"Use '\q' for quitting")
 
-    print(f"------------Asking without ai------------")
-    print(f"Question: {argv[0]}")
-    for i in range(len(results)):
-        print(f"Answer {i+1}: ")
-        print(f"{results[i]}")
+    while True:
+        question = input(">>> ")
+
+        if question.lower() == r"\q":
+            break
+
+        results = vector_store.similarity_search(
+            question, 
+            k=configs.vector_store_search_k, 
+            fetch_k=configs.vector_store_search_fetch_k, 
+        )
+
+        print(f"Question: {question}")
+        for i in range(len(results)):
+            print(f"Answer {i+1}: ")
+            print(f"{results[i]}")
 
 def ask_with_ai(argv: list[str]) -> None:
-    if len(argv) != 1:
-        raise Exception("askWithAi command don't accept more than one arg!")
+    print("------------Asking with AI------------")
+    print("Use '\q' for quitting")
 
-    retriever = vector_store.as_retriever()
+    while True:
+        question = input(">>> ")
 
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=chat_model, 
-        retriever=retriever, 
-        chain_type=configs.retrieval_chain_type, 
-    )
+        if question.lower() == r"\q":
+            break
 
-    response = qa_chain.invoke(argv[0])
+        retriever = vector_store.as_retriever()
 
-    print("------------Asking with ai------------")
-    print(f"Question: {response["query"]}")
-    print(f"Response: \n{response["result"]}")
+        qa_chain = RetrievalQA.from_chain_type(
+            llm=chat_model, 
+            retriever=retriever, 
+            chain_type=configs.retrieval_chain_type, 
+        )
+
+        response = qa_chain.invoke(question)
+
+        print(f"Question: {response["query"]}")
+        print(f"Response: \n{response["result"]}")
