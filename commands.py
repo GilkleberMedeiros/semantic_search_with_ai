@@ -8,41 +8,15 @@ from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain_google_genai.llms import GoogleGenerativeAI
 from langchain_core.documents import Document
 
-import os
-import getpass
+from configs import get_configs, get_google_api_key
 
-# TODO: Put configs on other file.
+
 # TODO: Extract configs from a json config file.
 # TODO: Put object dependencies loading in other file.
 # TODO: Make load_documents func get loader class from dict map with .suf: Loader
-class ConfigObj:
-    """
-    Temporary config class
-    """
-    def __init__(self) -> None:
-        self.model_chat = "gemini-1.5-pro"
-        self.chat_model_temperature = 0.7
-        self.chat_model_top_p = None
-        self.chat_model_top_k = None
-        self.model_embeddings = "models/embedding-001"
 
-        self.text_splitter_chunk_size = 1000
-        self.text_splitter_chunk_overlap = 50
-        self.text_splitter_length_function = len
-
-        self.vector_store_search_k = 1
-        self.vector_store_search_fetch_k = 20
-
-        self.retrieval_chain_type = "stuff"
-
-
-configs = ConfigObj()
-
-GOOGLE_API_KEY = os.environ.get("GOOGLE_AISTUDIO_API_KEY", "")
-
-if not GOOGLE_API_KEY:
-    GOOGLE_API_KEY = getpass.getpass("Provide your google ai api key: ")
-
+GOOGLE_API_KEY = get_google_api_key()
+configs = get_configs()
 
 chat_model = GoogleGenerativeAI(
     model=configs.model_chat,
