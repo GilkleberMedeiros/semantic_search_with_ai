@@ -6,8 +6,8 @@ from configs import get_configs, get_google_api_key
 from dependecies import chat_model, vector_store, text_spliter
 
 
-# TODO: Extract configs from a json config file.
 # TODO: Make load_documents func get loader class from dict map with .suf: Loader
+# TODO: Json config file path across ./search main command.
 
 GOOGLE_API_KEY = get_google_api_key()
 configs = get_configs()
@@ -56,8 +56,8 @@ def ask(argv: list[str]) -> None:
 
         results = vector_store.similarity_search(
             question, 
-            k=configs.vector_store_search_k, 
-            fetch_k=configs.vector_store_search_fetch_k, 
+            k=configs.vector_store.search.k, 
+            fetch_k=configs.vector_store.search.fetch_k, 
         )
 
         print(f"Question: {question}")
@@ -76,14 +76,14 @@ def ask_with_ai(argv: list[str]) -> None:
             break
 
         retriever = vector_store.as_retriever(search_kwargs={
-            "k": configs.retrieval_k, 
-            "fetch_k": configs.retrieval_fetch_k,
+            "k": configs.retrieval.k, 
+            "fetch_k": configs.retrieval.fetch_k,
         })
 
         qa_chain = RetrievalQA.from_chain_type(
             llm=chat_model, 
             retriever=retriever, 
-            chain_type=configs.retrieval_chain_type, 
+            chain_type=configs.retrieval.chain_type, 
         )
 
         response = qa_chain.invoke(question)

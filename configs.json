@@ -1,0 +1,29 @@
+{
+    "chat_model": {
+        "name": "gemini-1.5-pro",
+        "temperature": 0.7,
+        "top_p": null,
+        "top_k": null
+    },
+    "embeddings_model": {
+        "name": "models/embedding-001"
+    },
+    "text_splitter": {
+        "chunk_size": 1000,
+        "chunk_overlap": 50
+    },
+    "vector_store": {
+        "search": {
+            "k": 1,
+            "fetch_k": 20
+        }
+    },
+    "retrieval": {
+        "k": 4,
+        "fetch_k": 20,
+        "chain_type": "stuff"
+    },
+    "google_api_key": {
+        "name": "GOOGLE_AISTUDIO_API_KEY"
+    }
+}

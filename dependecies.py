@@ -12,14 +12,14 @@ GOOGLE_API_KEY = get_google_api_key()
 configs = get_configs()
 
 chat_model = GoogleGenerativeAI(
-    model=configs.model_chat,
+    model=configs.chat_model.name,
     api_key=GOOGLE_API_KEY,
-    temperature=configs.chat_model_temperature,
-    top_p=configs.chat_model_top_p,
-    top_k=configs.chat_model_top_k,
+    temperature=configs.chat_model.temperature,
+    top_p=configs.chat_model.top_p,
+    top_k=configs.chat_model.top_k,
 )
 embeddings_model = GoogleGenerativeAIEmbeddings(
-    model=configs.model_embeddings, 
+    model=configs.embeddings_model.name, 
     google_api_key=GOOGLE_API_KEY,
 )
 
@@ -32,7 +32,7 @@ vector_store = FAISS(
 )
 
 text_spliter = CharacterTextSplitter(
-    chunk_size=configs.text_splitter_chunk_size, 
-    chunk_overlap=configs.text_splitter_chunk_overlap,
-    length_function=configs.text_splitter_length_function,
+    chunk_size=configs.text_splitter.chunk_size, 
+    chunk_overlap=configs.text_splitter.chunk_overlap,
+    length_function=len,
 )

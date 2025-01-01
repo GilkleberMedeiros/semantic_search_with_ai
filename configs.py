@@ -1,47 +1,56 @@
 import os
 import getpass
-from random import randint
+import json
+from pathlib import Path
+from typing import TypeVar
+
+
+AnyEmptyClass = TypeVar("AnyEmptyClass")
 
 
 class ConfigObj:
     """
-    Temporary config class
+    Empty config class to be filled with configs attrs.
     """
-    def __init__(self) -> None:
-        self.model_chat = "gemini-1.5-pro"
-        self.chat_model_temperature = 0.7
-        self.chat_model_top_p = None
-        self.chat_model_top_k = None
-        self.model_embeddings = "models/embedding-001"
-
-        self.text_splitter_chunk_size = 1000
-        self.text_splitter_chunk_overlap = 50
-        self.text_splitter_length_function = len
-
-        self.vector_store_search_k = 1
-        self.vector_store_search_fetch_k = 20
-
-        self.retrieval_k = 4
-        self.retrieval_fetch_k = 20
-        self.retrieval_chain_type = "stuff"
-
-        self.google_api_key_name = "GOOGLE_AISTUDIO_API_KEY"
-
 
 __configs: ConfigObj | None = None
 
 def get_configs() -> ConfigObj:
     global __configs
 
-    __configs = __configs or ConfigObj()
+    if __configs:
+        return __configs
+    
+    configs_fp = Path("./configs.json").open()
+    configs_dict = json.load(configs_fp)
+
+    __configs = parse_dict_to_obj(ConfigObj, configs_dict)
 
     return __configs
 
 def get_google_api_key() -> str:
     configs = get_configs()
-    GOOGLE_API_KEY = os.environ.get(configs.google_api_key_name, "")
+    GOOGLE_API_KEY = os.environ.get(configs.google_api_key.name, "") # type: ignore
 
     if not GOOGLE_API_KEY:
         GOOGLE_API_KEY = getpass.getpass("Provide your google ai api key: ")
 
     return GOOGLE_API_KEY 
+
+def parse_dict_to_obj(cls: type[AnyEmptyClass], d: dict[str, any]) -> AnyEmptyClass:
+    """
+    Receive a class and a dict.
+    If some key in the dict leads to another dict, func will parse the inner dict
+    to an second object and assign it to the first object with key as attr name, recursively. 
+    Otherwise it will parse key as the name of the object attr and put respective value on it.
+    """
+    obj = cls()
+
+    for k, v in d.items():
+        if isinstance(v, dict):
+            inner_obj = parse_dict_to_obj(cls, v)
+            setattr(obj, k, inner_obj)
+        else:
+            setattr(obj, k, v)
+
+    return obj
