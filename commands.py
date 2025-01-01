@@ -11,7 +11,11 @@ from langchain_core.documents import Document
 import os
 import getpass
 
-
+# TODO: Create sub-terminals for ask and askWithAI commands
+# TODO: Put configs on other file.
+# TODO: Extract configs from a json config file.
+# TODO: Put object dependencies loading in other file.
+# TODO: Make load_documents func get loader class from dict map with .suf: Loader
 class ConfigObj:
     """
     Temporary config class
