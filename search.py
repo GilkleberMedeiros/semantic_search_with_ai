@@ -3,9 +3,7 @@ Arquivo de entrada para a aplicação cli.
 """
 from sys import argv
 from pathlib import Path
-
-from sys import argv
-from pathlib import Path
+from textwrap import dedent
 
 from commands import *
 
@@ -35,6 +33,21 @@ def main() -> None:
     print("Entering on personalized command line...")
 
     while True:
+        print(dedent(
+            f"""
+                Commands:
+                    train "arg1" 'arg2' ... @argN: Use it to pass documents to vectorDB that will be used
+                    for asking your questions.
+                    ask: Init a sub-terminal where you can make any question in format `>>> message`. This 
+                    questions will be answered using vector's similarity_search which will give you 
+                    `vector_store.search.k` texts chunks.
+                    askWithAI: Same as ask, but will use AI to give you a better answer.
+                    quit: quit the cli.
+                
+                Flags:
+                    -d: Use if you don't want to load default_data.
+            """
+        ))
         argv = split_ignoring_while_in_char(input(""))
 
         if argv[0] == "quit":
