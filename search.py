@@ -1,6 +1,9 @@
 """
 Arquivo de entrada para a aplicação cli.
 """
+from sys import argv
+from pathlib import Path
+
 from commands import *
 
 command_map = {
@@ -10,6 +13,22 @@ command_map = {
 }
 
 def main() -> None:
+    global argv
+
+    if "-d" not in argv:
+        default_data_dir = Path("./default_data/")
+
+        if not default_data_dir.is_dir():
+            print(f"Couldn't load default_data, registered path is not a dir or not even exists.")
+        else:
+            print(f"--------------Loading default_data--------------")
+
+            docs_list = []
+            for doc in default_data_dir.iterdir():
+                docs_list.append("@" + str(doc.resolve()))
+
+            train(docs_list)
+
     print("Entering on personalized command line...")
 
     while True:
