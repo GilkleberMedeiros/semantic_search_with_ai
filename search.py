@@ -4,6 +4,9 @@ Arquivo de entrada para a aplicação cli.
 from sys import argv
 from pathlib import Path
 
+from sys import argv
+from pathlib import Path
+
 from commands import *
 
 command_map = {
